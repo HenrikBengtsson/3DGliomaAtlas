@@ -32,6 +32,7 @@ server <- function(input, output){
     if (is.null(input$patient))
       return()
 
+    # Note: results in connection issue errors
     sfNums <- patientSFNum[patientSFNum$Patient==input$patient,'SFNumber']
     switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1])
     )
@@ -42,13 +43,15 @@ server <- function(input, output){
       return()
     
     pstr <- gsub('P', 'Patient', input$patient)
-    # Note: results in connection issue errors for some reason
     data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))
     switch(input$tumor, selectInput("gene", "Gene", choices = rownames(data), selected = rownames(data)[1])
     )
   })
   
   output$temp_print_text <- renderText({
+    # Note: couldn't figure out how to read in dataset outside of render function calls
+    pstr <- gsub('P', 'Patient', input$patient)
+    data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))
     as.character(data[input$gene,])
   })
 
