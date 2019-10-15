@@ -32,7 +32,7 @@ plot3dSamples <- function(sampleModels, colors){
 
 plot3DmodelMain <- function(patientID, sf, colors){
   # Specify patient and load the config file for that patient. Config file contains paths to imaging files + ordering of samples + sample names + colors
-  modelsPath <- paste0(dataPath, '/3Dmodels/',patientID,'/',sf)
+  modelsPath <- paste0('data/models/',patientID,'/',sf)
   
   # Retreive sample model files
   sampleModelFiles <- mixedsort(list.files(modelsPath, pattern="sample*"))
