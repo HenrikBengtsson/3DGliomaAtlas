@@ -26,7 +26,7 @@ tabPanel(title = "Data", id = "data",
       verbatimTextOutput("temp_print_text") # Placeholder
     ),
     
-    mainPanel(webGLOutput("model3D"))
+    mainPanel(rglwidgetOutput("model3D"))
   )
   
 )
