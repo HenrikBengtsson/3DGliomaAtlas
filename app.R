@@ -1,8 +1,6 @@
 # Load packages
 library(shiny)
 library(rgl)
-library(shinyRGL)
-library(rglwidget)
 
 # Load data
 sampleData <- readRDS("data/metadata/sampledata_v7.rds")
@@ -54,19 +52,20 @@ server <- function(input, output){
     )
   })
   
-  #output$tumor <- renderText({
-  #  # Note: couldn't figure out how to read in dataset outside of render function calls
-  #  pstr <- gsub('P', 'Patient', input$patient)
-  #  data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))#data has rownames=gene names and colnames=sample names of format PNNNvN
-  #  as.character(data[input$gene,])
-  #})
+  output$temp_print_text <- renderText({
+    # Note: couldn't figure out how to read in dataset outside of render function calls
+    pstr <- gsub('P', 'Patient', input$patient)
+    data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))#data has rownames=gene names and colnames=sample names of format PNNNvN
+    as.character(data[input$gene,])
+  })
   
-  output$model3D <- renderWebGL({ #ended with trying to get this to render in the main panel
+  output$model3D <- renderRglwidget({ #ended with trying to get this to render in the main panel
+    try(rgl.close(), silent = TRUE)
     pstr <- gsub('P', 'Patient', input$patient)
     sf <- tolower(input$tumor)
     data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))#data has rownames=gene names and colnames=sample names of format PNNNvN
     vector <- as.numeric(data[input$gene,])#works for RNA, will at some point need to change this to a function that can pull out the vector for any dataset
-    names(vector) <- gsub('v','',gsub(pdiddy,'',colnames(data)))
+    names(vector) <- gsub('v','',gsub(input$patient,'',colnames(data)))
     colors <- colorByFeatureMain(vector)
     plot3DmodelMain(pstr, sf, colors)
     rglwidget()
