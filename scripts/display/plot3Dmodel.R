@@ -26,7 +26,7 @@ plot3dSamples <- function(sampleCoordinates, colors){
     }
     sampleColors <- append(sampleColors, singleColor)
   }
-  points3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], level = 1, cex = 2, color=sampleColor)
+  points3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], level = 1, cex = 5, color=sampleColors)
   text3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], texts = rownames(sampleCoordinates), cex=1, adj=-.3)
 }
 
