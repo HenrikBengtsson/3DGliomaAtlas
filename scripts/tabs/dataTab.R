@@ -8,7 +8,7 @@ tabPanel(title = "Data", id = "data",
       # User input - select dataset
       selectInput("dataset",
                   label = "Dataset",
-                  choices = c("RNA"),
+                  choices = c("RNA", "Purity"),
                   selected = "RNA"),
       
       # User input - select patient ID
