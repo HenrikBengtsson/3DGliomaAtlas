@@ -1,1 +1,5 @@
+.gitignore
 .Rhistory
+.RData
+scripts/display/.DS_Store
+*~
