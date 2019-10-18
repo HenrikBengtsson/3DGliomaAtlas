@@ -70,7 +70,6 @@ server <- function(input, output){
     plot3DmodelMain(pstr, sf, colors)
     rglwidget()
   })
-
 }
 
 # Run the app
