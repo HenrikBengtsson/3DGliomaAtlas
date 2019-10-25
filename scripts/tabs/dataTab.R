@@ -8,9 +8,13 @@ tabPanel(title = "Data", id = "data",
       # User input - select dataset
       selectInput("dataset",
                   label = "Dataset",
-                  choices = c("RNA", "Purity"),
+                  choices = c("RNA", "Purity", "Copy Number", "Histology"), 
                   selected = "RNA"),
+      # CN instead of "Copy Number" bc of rds naming convention (need to change later)
       
+      # User input - select type ID (type of histological data)
+      uiOutput("typeUI"),
+            
       # User input - select patient ID
       uiOutput("patientUI"),
       

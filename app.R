@@ -2,16 +2,15 @@
 library(shiny)
 library(rgl)
 
-# Load data
-sampleData <- readRDS("data/metadata/sampledata_v7.rds")
-tumorData <- readRDS("data/metadata/tumordata_v7.rds")
-withRNA <- sort(as.vector(unique(sampleData$Patient[!is.na(sampleData$RNAseq_ColRaw)])))
-withPurity <- sort(as.vector(unique(sampleData$Patient[!is.na(sampleData$FACETS)])))
-patientSFNum <- unique(sampleData[,c('Patient','SFNumber')])
-
 # Load functions
 source("scripts/display/plot3Dmodel.R", local = TRUE)
 source("scripts/display/colorByFeature.R", local = TRUE)
+source("scripts/processing/processing.R", local = TRUE)
+
+# Load data
+sampleData <- readRDS("data/metadata/sampledata_v7.rds")
+tumorData <- readRDS("data/metadata/tumordata_v7.rds")
+tumorDatasets <- getDatasets("data/datasets/")
 
 # User interface
 ui <- navbarPage("3DGliomaAtlas",
@@ -22,37 +21,64 @@ ui <- navbarPage("3DGliomaAtlas",
 # Server logic
 server <- function(input, output){
 
-  output$patientUI <- renderUI({
-    if (is.null(input$dataset))
+  output$typeUI <- renderUI({
+    if (input$dataset!="Histology")
       return()
     
     switch(input$dataset,
-           "RNA" = selectInput("patient", "Patient",
-                               choices = withRNA,
-                               selected = withRNA[2]),
-           "Purity" = selectInput("patient", "Patient",
-                               choices = withPurity,
-                               selected = withPurity[2])
+           "Histology" = selectInput("type", "Type", choice = c("Percent Necrosis", "BV Hyperplasia"), 
+                                     selected = "Percent Necrosis")
     )
   })
+  
+  output$patientUI <- renderUI({
+    if (is.null(input$dataset) & is.null(input$type))
+      return()
+
+    if (input$dataset!="Histology"){
+      switch(input$dataset,
+             "RNA" = selectInput("patient", "Patient", 
+                                 choices = tumorDatasets[!is.na(tumorDatasets$rna.rds), 'patient'], 
+                                 selected = tumorDatasets[!is.na(tumorDatasets$rna.rds), 'patient'][2]),
+             "Purity" = selectInput("patient", "Patient", 
+                                    choices = tumorDatasets[!is.na(tumorDatasets$purity.rds), 'patient'], 
+                                    selected = tumorDatasets[!is.na(tumorDatasets$purity.rds), 'patient'][2]),
+             "Copy Number" = selectInput("patient", "Patient", 
+                                         choices = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'], 
+                                         selected = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'][2])
+      )
+    } else {
+      switch(input$type,
+             "Percent Necrosis" = selectInput("patient", "Patient", 
+                                 choices = tumorDatasets[!is.na(tumorDatasets$per_nec.rds), 'patient'], 
+                                 selected = tumorDatasets[!is.na(tumorDatasets$per_nec.rds), 'patient'][2]),
+             "BV Hyperplasia" = selectInput("patient", "Patient", 
+                                    choices = tumorDatasets[!is.na(tumorDatasets$bv_hyper.rds), 'patient'], 
+                                    selected = tumorDatasets[!is.na(tumorDatasets$bv_hyper.rds), 'patient'][2])
+      )
+    }
+  })
+  
   
   output$tumorUI <- renderUI({
     if (is.null(input$patient))
       return()
 
-    # Note: results in connection issue errors
-    sfNums <- patientSFNum[patientSFNum$Patient==input$patient,'SFNumber']
-    switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1])
-    )
+    sfNums <- tumorDatasets[tumorDatasets$patient==input$patient, 'sf']
+    switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1]))
   })
   
   output$geneUI <- renderUI({
     if (is.null(input$tumor))
       return()
     
-    pstr <- gsub('P', 'Patient', input$patient)
-    data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))
-    if (input$dataset=='Purity'){ # Don't need to select gene for purity
+    if (input$dataset=="Histology"){
+      fname <- input_to_filename[input$type]
+    } else {
+      fname <- input_to_filename[input$dataset]
+    }
+    data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))
+    if (input$dataset %in% c('Purity', 'Histology')){ # Don't need to select gene for purity or histology
       return()
     } else {
       switch(input$tumor, selectInput("gene", "Gene", choices = rownames(data), selected = rownames(data)[1]))
@@ -60,10 +86,13 @@ server <- function(input, output){
   })
   
   output$temp_print_text <- renderText({
-    # Note: couldn't figure out how to read in dataset outside of render function calls
-    pstr <- gsub('P', 'Patient', input$patient)
-    data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))#data has rownames=gene names and colnames=sample names of format PNNNvN
-    if (is.null(dim(data))){ # Handling purity dataset (vector instead of dataframe)
+    if (input$dataset=="Histology"){
+      fname <- input_to_filename[input$type]
+    } else {
+      fname <- input_to_filename[input$dataset]
+    }
+    data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
+    if (is.null(dim(data))){ # Handling purity & histology datasets (vector instead of dataframe)
       vector <- as.numeric(data)
     } else { # All other datasets
       vector <- as.numeric(data[input$gene,])
@@ -73,18 +102,20 @@ server <- function(input, output){
   
   output$model3D <- renderRglwidget({ #ended with trying to get this to render in the main panel
     try(rgl.close(), silent = TRUE)
-    pstr <- gsub('P', 'Patient', input$patient)
-    sf <- tolower(input$tumor)
-    data <- readRDS(paste0('data/datasets/', pstr, '/', tolower(input$tumor), '/', tolower(input$dataset), '.rds'))#data has rownames=gene names and colnames=sample names of format PNNNvN
-    if (is.null(dim(data))){ # Handling purity dataset (vector instead of dataframe)
+    if (input$dataset=="Histology"){
+      fname <- input_to_filename[input$type]
+    } else {
+      fname <- input_to_filename[input$dataset]
+    }
+    data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
+    if (is.null(dim(data))){ # Handling purity & histology datasets (vector instead of dataframe)
       vector <- as.numeric(data)
-      names(vector) <-  gsub('v','',gsub(input$patient,'',names(data)))
     } else { # All other datasets
       vector <- as.numeric(data[input$gene,])
-      names(vector) <- gsub('v','',gsub(input$patient,'',colnames(data)))
     }
+    names(vector) <- gsub('P[0-9]{3}v', '', names(data))
     colors <- colorByFeatureMain(vector)
-    plot3DmodelMain(pstr, sf, colors)
+    plot3DmodelMain(input$patient, input$tumor, colors)
     rglwidget()
   })
 }
