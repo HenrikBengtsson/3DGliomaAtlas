@@ -8,7 +8,7 @@ tabPanel(title = "Data", id = "data",
       # User input - select dataset
       selectInput("dataset",
                   label = "Dataset",
-                  choices = c("RNA", "Purity", "Copy Number", "Histology"), 
+                  choices = c("RNA", "Purity", "Copy Number", "Amplification", "Histology"), 
                   selected = "RNA"),
       # CN instead of "Copy Number" bc of rds naming convention (need to change later)
       
@@ -20,6 +20,9 @@ tabPanel(title = "Data", id = "data",
       
       # User input - select tumor
       uiOutput("tumorUI"),
+      
+      # User input - select copy number threshold
+      uiOutput("thresholdUI"),
       
       # User input - select gene
       uiOutput("geneUI"),

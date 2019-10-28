@@ -45,6 +45,9 @@ server <- function(input, output){
                                     selected = tumorDatasets[!is.na(tumorDatasets$purity.rds), 'patient'][2]),
              "Copy Number" = selectInput("patient", "Patient", 
                                          choices = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'], 
+                                         selected = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'][2]),
+             "Amplification" = selectInput("patient", "Patient", 
+                                         choices = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'], 
                                          selected = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'][2])
       )
     } else {
@@ -66,6 +69,14 @@ server <- function(input, output){
 
     sfNums <- tumorDatasets[tumorDatasets$patient==input$patient, 'sf']
     switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1]))
+  })
+
+  output$thresholdUI <- renderUI({
+    if (input$dataset!="Amplification")
+      return()
+    
+    switch(input$dataset, sliderInput("threshold", "Threshold", min = 0, max = 15, value = 5, step = 0.1)
+    )
   })
   
   output$geneUI <- renderUI({
@@ -92,6 +103,9 @@ server <- function(input, output){
       fname <- input_to_filename[input$dataset]
     }
     data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
+    if (input$dataset=='Amplification'){
+      data <- cn_to_amp(data, input$threshold)
+    }
     if (is.null(dim(data))){ # Handling purity & histology datasets (vector instead of dataframe)
       vector <- as.numeric(data)
     } else { # All other datasets
@@ -108,6 +122,9 @@ server <- function(input, output){
       fname <- input_to_filename[input$dataset]
     }
     data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
+    if (input$dataset=='Amplification'){
+      data <- cn_to_amp(data, input$threshold)
+    }
     if (is.null(dim(data))){ # Handling purity & histology datasets (vector instead of dataframe)
       vector <- as.numeric(data)
     } else { # All other datasets

@@ -1,5 +1,10 @@
 library(gtools)
 
+# Input to dataset filenames conversion
+input_to_filename <- list('rna.rds', 'purity.rds', 'cn.rds', 'cn.rds', 'per_nec.rds', 'bv_hyper.rds', 'Histology')
+names(input_to_filename) <- c('RNA', 'Purity', 'Copy Number', 'Amplification', 'Percent Necrosis', 'BV Hyperplasia', 
+                              'Histology') # Both Copy Number & Amplification read from cn.rds file
+
 getDatasets <- function(datasets_path){
   #' Creates dataframe containing the datasets that exist for each tumor
   tumor_datasets <- data.frame(patient = c(), sf = c())
@@ -17,7 +22,8 @@ getDatasets <- function(datasets_path){
   return(tumor_datasets)
 }
 
-# Input to dataset filenames conversion
-input_to_filename <- list('rna.rds', 'purity.rds', 'cn.rds', 'per_nec.rds', 'bv_hyper.rds', 'Histology')
-names(input_to_filename) <- c('RNA', 'Purity', 'Copy Number', 'Percent Necrosis', 'BV Hyperplasia', 
-                              'Histology')
+cn_to_amp <- function(cn_df, threshold){
+  # Binarizes copy number matrix, if TCN > threshold 
+  amp_df <- apply(cn_df, c(1, 2), function(x) ifelse(x > threshold, 1, 0))
+  return(amp_df)
+}
