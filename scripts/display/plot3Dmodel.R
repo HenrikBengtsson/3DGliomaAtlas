@@ -21,12 +21,12 @@ plot3dSamples <- function(sampleCoordinates, colors){
     if(!is.na(colors[as.character(name)])){
       singleColor <- colors[name]
     } else {
-      singleColor <- '#FFFF00'
+      singleColor <- '#a7a457'
       print(name)
     }
     sampleColors <- append(sampleColors, singleColor)
   }
-  points3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], level = 1, cex = 5, color=sampleColors)
+  points3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], level = 1, size = 7, color=sampleColors)
   text3d(x=sampleCoordinates[,1], y=sampleCoordinates[,2], z=sampleCoordinates[,3], texts = rownames(sampleCoordinates), cex=1, adj=-.3)
 }
 
@@ -36,7 +36,7 @@ plot3DmodelMain <- function(patientID, sf, colors){
   modelsPath <- paste0('data/models/',patientID,'/',sf)
   
   # Read in sample models
-  sampleCoordinates <- readRDS(paste0(modelsPath, '/sample_coordinates.rds'))
+  sampleCoordinates <- readRDS(paste0(modelsPath, '/coordinates_samples.rds'))
   
   # Read in tumor model for patient
   tumorModel <- readRDS(paste0(modelsPath, '/tumor_t2.rds'))
