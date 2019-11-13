@@ -15,12 +15,14 @@ tumorDatasets <- getDatasets("data/datasets/")
 # User interface
 ui <- navbarPage("3DGliomaAtlas",
   source("scripts/tabs/dataTab.R", local = TRUE)$value,
-  source("scripts/tabs/aboutTab.R", local = TRUE)$value
+  source("scripts/tabs/aboutTab.R", local = TRUE)$value,
+  options(shiny.sanitize.errors = TRUE),
+  tags$head(tags$style(type="text/css",".shiny-output-error{visibility: hidden; }")),
+  tags$head(tags$style(".shiny-output-error:before{content: 'Loading 3D model...';visibility: visible; }"))
 )
 
 # Server logic
 server <- function(input, output){
-
   output$typeUI <- renderUI({
     if (input$dataset!="Histology")
       return()
