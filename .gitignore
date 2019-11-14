@@ -4,3 +4,5 @@
 scripts/display/.DS_Store
 *~
 data/models/.Rhistory
+#*
+.DS_Store
