@@ -8,8 +8,8 @@ source("scripts/display/colorByFeature.R", local = TRUE)
 source("scripts/processing/processing.R", local = TRUE)
 
 # Load data
-sampleData <- readRDS("data/metadata/sampledata_v7.rds")
-tumorData <- readRDS("data/metadata/tumordata_v7.rds")
+sampleData <- readRDS("data/metadata/sampledata_v8.rds")
+tumorData <- readRDS("data/metadata/tumordata_v8.rds")
 tumorDatasets <- getDatasets("data/datasets/")
 
 # User interface
