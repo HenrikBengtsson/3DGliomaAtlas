@@ -6,20 +6,20 @@ tabPanel(title = "Data", id = "data",
     sidebarPanel(
       
       # User input - select dataset
-      selectInput("dataset",
-                  label = "Dataset",
-                  choices = c("RNA", "Purity", "Copy Number", "Amplification", "Histology"), 
-                  selected = "RNA"),
+      selectInput("patient",
+                  label = "Patient",
+                  choices = paste0('Patient',c('260','300','303','327','340','372','373','375','413','450','452','453','454','455','457')), 
+                  selected = "Patient300"),
       # CN instead of "Copy Number" bc of rds naming convention (need to change later)
-      
-      # User input - select type ID (type of histological data)
-      uiOutput("typeUI"),
-            
-      # User input - select patient ID
-      uiOutput("patientUI"),
       
       # User input - select tumor
       uiOutput("tumorUI"),
+      
+      # User input - select patient ID
+      uiOutput("datasetUI"),
+      
+      # User input - select type ID (type of histological data)
+      uiOutput("typeUI"),
       
       # User input - select copy number threshold
       uiOutput("thresholdUI"),
