@@ -1,13 +1,13 @@
-atlas_path <- '/media/sf_ucsf/myCostelloLab/3DGliomaAtlas/'
+atlas_path <- '/Users/shilz/Documents/Professional/Positions/UCSF_Costello/Projects/2016_LoglioExomeAnalysis/Tools/3DGliomaAtlas/git_repo/3DGliomaAtlas/'
 
-sample_data <- readRDS(paste0(atlas_path, 'data/metadata/', 'sampledata_v7.rds'))
+sample_data <- readRDS(paste0(atlas_path, 'data/metadata/', 'sampledata_v10.rds'))
 sample_data$SFNumber <- tolower(sample_data$SFNumber)
 sample_data$Sample <- apply(sample_data, 1, function(x) paste0(x['Patient'], x['SampleName']))
 
-tumor_data <- readRDS(paste0(atlas_path, 'data/metadata/', 'tumordata_v7.rds'))
+tumor_data <- readRDS(paste0(atlas_path, 'data/metadata/', 'tumordata_v10.rds'))
 
-analysis_path <- '/media/sf_ucsf/myCostelloLab/3DGliomaAnalysis/data/'
-rna_cpm <- read.table(paste0(analysis_path, 'SID000003_20190529_first_submission.symbol.coding.CPMs.txt'), 
+analysis_path <- '/Users/shilz/Documents/Professional/Positions/UCSF_Costello/Publications/Hilz2018_IDHSpatioTemporal/Scripts/3DGliomaAnalysis/data/'
+rna_cpm <- read.table(paste0(analysis_path, 'SID000003_20190913_expanded_gbm.symbol.coding.CPMs.txt'), 
                       sep = '\t', row.names = 1, header = TRUE)
                       
 gbm_hist <- read.delim(paste0(analysis_path, '20190903_GBM_histology_radiology_metrics.txt'))
@@ -17,7 +17,7 @@ gbm_hist$Sample <- apply(gbm_hist, 1, function(x) paste0(x['Patient'], x['Sample
 rownames(gbm_hist) <- gbm_hist$Sample
 
 dataset_path <- paste0(atlas_path, 'data/datasets/')
-cn_path <- "/mnt/cluster/data1/shilz/data/copynumber/"
+cn_path <- "~/cclc01/costellolab/data1/shilz/data/copynumber/"
 
 # write.table(rna_cpm, 'rna_cpm.txt', sep = '\t')
 # write.table(sample_data, 'sample_data.txt', sep = '\t')
