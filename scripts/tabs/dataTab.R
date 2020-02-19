@@ -5,7 +5,7 @@ tabPanel(title = "Data", id = "data",
   sidebarLayout(
     sidebarPanel(
       
-      # User input - select dataset
+      # User input - select patient
       selectInput("patient",
                   label = "Patient",
                   choices = paste0('Patient',c('260','300','303','327','340','372','373','375','413','450','452','453','454','455','457')), 
@@ -15,7 +15,7 @@ tabPanel(title = "Data", id = "data",
       # User input - select tumor
       uiOutput("tumorUI"),
       
-      # User input - select patient ID
+      # User input - select dataset
       uiOutput("datasetUI"),
       
       # User input - select type ID (type of histological data)

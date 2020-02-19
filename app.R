@@ -23,6 +23,21 @@ ui <- navbarPage("3DGliomaAtlas",
 
 # Server logic
 server <- function(input, output){
+  
+  output$tumorUI <- renderUI({
+    if (is.null(input$patient))
+      return()
+    
+    sfNums <- tumorDatasets[tumorDatasets$patient==input$patient, 'sf']
+    switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1]))
+  })
+  
+  output$datasetUI <- renderUI({
+    datasetConversion <- c(cn.rds='Copy Number', purity.rds='Purity', rna.rds='RNA', by_hyper.rds='Histology', per_nec.rds='Histology')
+    availableDatasets <- as.character(datasetConversion[colnames(tumorDatasets[which(tumorDatasets[which(tumorDatasets$patient==input$patient),]==1)])])
+    switch(input$patient, selectInput("dataset", "Dataset", choices = availableDatasets))
+  })
+  
   output$typeUI <- renderUI({
     if (input$dataset!="Histology")
       return()
@@ -33,46 +48,6 @@ server <- function(input, output){
     )
   })
   
-  output$patientUI <- renderUI({
-    if (is.null(input$dataset) & is.null(input$type))
-      return()
-
-    if (input$dataset!="Histology"){
-      switch(input$dataset,
-             "RNA" = selectInput("patient", "Patient", 
-                                 choices = tumorDatasets[!is.na(tumorDatasets$rna.rds), 'patient'], 
-                                 selected = tumorDatasets[!is.na(tumorDatasets$rna.rds), 'patient'][2]),
-             "Purity" = selectInput("patient", "Patient", 
-                                    choices = tumorDatasets[!is.na(tumorDatasets$purity.rds), 'patient'], 
-                                    selected = tumorDatasets[!is.na(tumorDatasets$purity.rds), 'patient'][2]),
-             "Copy Number" = selectInput("patient", "Patient", 
-                                         choices = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'], 
-                                         selected = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'][2]),
-             "Amplification" = selectInput("patient", "Patient", 
-                                         choices = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'], 
-                                         selected = tumorDatasets[!is.na(tumorDatasets$cn.rds), 'patient'][2])
-      )
-    } else {
-      switch(input$type,
-             "Percent Necrosis" = selectInput("patient", "Patient", 
-                                 choices = tumorDatasets[!is.na(tumorDatasets$per_nec.rds), 'patient'], 
-                                 selected = tumorDatasets[!is.na(tumorDatasets$per_nec.rds), 'patient'][2]),
-             "BV Hyperplasia" = selectInput("patient", "Patient", 
-                                    choices = tumorDatasets[!is.na(tumorDatasets$bv_hyper.rds), 'patient'], 
-                                    selected = tumorDatasets[!is.na(tumorDatasets$bv_hyper.rds), 'patient'][2])
-      )
-    }
-  })
-  
-  
-  output$tumorUI <- renderUI({
-    if (is.null(input$patient))
-      return()
-
-    sfNums <- tumorDatasets[tumorDatasets$patient==input$patient, 'sf']
-    switch(input$patient, selectInput("tumor", "Tumor", choices = sfNums, selected = sfNums[1]))
-  })
-
   output$thresholdUI <- renderUI({
     if (input$dataset!="Amplification")
       return()
