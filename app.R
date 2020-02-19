@@ -33,7 +33,7 @@ server <- function(input, output){
   })
   
   output$datasetUI <- renderUI({
-    datasetConversion <- c(cn.rds='Copy Number', purity.rds='Purity', rna.rds='RNA', by_hyper.rds='Histology', per_nec.rds='Histology')
+    datasetConversion <- c(cn.rds='Copy Number', purity.rds='Tumor Cell Proportion', rna.rds='RNAseq', by_hyper.rds='Histology', per_nec.rds='Histology')
     availableDatasets <- as.character(datasetConversion[colnames(tumorDatasets[which(tumorDatasets[which(tumorDatasets$patient==input$patient),]==1)])])
     switch(input$patient, selectInput("dataset", "Dataset", choices = availableDatasets))
   })
@@ -66,7 +66,7 @@ server <- function(input, output){
       fname <- input_to_filename[input$dataset]
     }
     data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))
-    if (input$dataset %in% c('Purity', 'Histology')){ # Don't need to select gene for purity or histology
+    if (input$dataset %in% c('Tumor Cell Proportion', 'Histology')){ # Don't need to select gene for purity or histology
       return()
     } else {
       switch(input$tumor, selectInput("gene", "Gene", choices = rownames(data), selected = rownames(data)[1]))
@@ -75,9 +75,9 @@ server <- function(input, output){
   
   output$temp_print_text <- renderText({
     if (input$dataset=="Histology"){
-      fname <- input_to_filename[input$type]
+      fname <- names(datasetConversion[which(datasetConversion==input$type)])
     } else {
-      fname <- input_to_filename[input$dataset]
+      fname <- names(datasetConversion[which(datasetConversion==input$dataset)])
     }
     data <- readRDS(paste0('data/datasets/', input$patient, '/', input$tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
     if (input$dataset=='Amplification'){

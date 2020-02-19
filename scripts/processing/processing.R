@@ -2,7 +2,7 @@ library(gtools)
 
 # Input to dataset filenames conversion
 input_to_filename <- list('rna.rds', 'purity.rds', 'cn.rds', 'cn.rds', 'per_nec.rds', 'bv_hyper.rds', 'Histology')
-names(input_to_filename) <- c('RNA', 'Purity', 'Copy Number', 'Amplification', 'Percent Necrosis', 'BV Hyperplasia', 
+names(input_to_filename) <- c('RNAseq', 'Tumor Cell Proportion', 'Gene Copy Number', 'Gene Amplification', 'Percent Necrosis', 'BV Hyperplasia', 
                               'Histology') # Both Copy Number & Amplification read from cn.rds file
 
 getDatasets <- function(datasets_path){
