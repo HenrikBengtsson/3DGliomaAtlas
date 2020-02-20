@@ -1,6 +1,7 @@
 # Load packages
 library(shiny)
 library(rgl)
+library(shinythemes)
 
 # Load functions
 source("scripts/display/plot3Dmodel.R", local = TRUE)
@@ -18,7 +19,8 @@ ui <- navbarPage("3DGliomaAtlas",
   source("scripts/tabs/aboutTab.R", local = TRUE)$value,
   options(shiny.sanitize.errors = TRUE),
   tags$head(tags$style(type="text/css",".shiny-output-error{visibility: hidden; }")),
-  tags$head(tags$style(".shiny-output-error:before{content: 'Loading 3D model...';visibility: visible; }"))
+  tags$head(tags$style(".shiny-output-error:before{content: 'Loading 3D model...';visibility: visible; }")),
+  theme= shinytheme('flatly')
 )
 
 # Server logic
