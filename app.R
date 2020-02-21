@@ -35,7 +35,7 @@ server <- function(input, output){
   })
   
   output$datasetUI <- renderUI({
-    datasetConversion <- c(cn.rds='Gene Copy Number', purity.rds='Tumor Cell Proportion', rna.rds='RNAseq', by_hyper.rds='Histology', per_nec.rds='Histology')
+    datasetConversion <- c(cn.rds='Copy Number', purity.rds='Tumor Cell Proportion', rna.rds='RNAseq', by_hyper.rds='Histology', per_nec.rds='Histology')
     availableDatasets <- as.character(datasetConversion[colnames(tumorDatasets[which(tumorDatasets[which(tumorDatasets$patient==input$patient),]==1)])])
     switch(input$patient, selectInput("dataset", "Dataset", choices = availableDatasets))
   })
