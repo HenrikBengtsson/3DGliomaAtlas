@@ -28,9 +28,9 @@ tabPanel(title = "Data", id = "data",
       uiOutput("geneUI"),
       
       # Display data selected (at some point we can make this look a bit nicer and add in sample IDs)
-      tags$p("Vector:"), # Placeholder
+      tags$p("Data values:"), # Placeholder
       
-      verbatimTextOutput("temp_print_text") # Placeholder
+      verbatimTextOutput("data_values") # Placeholder
     ),
     
     mainPanel(rglwidgetOutput("model3D"))

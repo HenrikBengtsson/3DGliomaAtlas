@@ -27,3 +27,27 @@ cn_to_amp <- function(cn_df, threshold){
   amp_df <- apply(cn_df, c(1, 2), function(x) ifelse(x > threshold, 1, 0))
   return(amp_df)
 }
+
+getDataValues <- function(patient, tumor, dataset, type, gene, threshold, conversion){
+  input_to_filename <- 
+  if (dataset=="Histology"){
+    if (type=='BV Hyperplasia'){
+      fname <- 'bv_hyper.rds'
+    } else {
+      fname <- 'per_nec.rds'
+    }
+  } else {
+    fname <-  names(conversion[which(conversion==dataset)])
+  }
+  data <- readRDS(paste0('data/datasets/', patient, '/', tumor, '/', fname))#data has rownames=gene names and colnames=sample names of format PNNNvN
+  if (dataset=='Amplification'){
+    data <- cn_to_amp(data, threshold)
+  }
+  if (is.null(dim(data))){ # Handling purity & histology datasets (vector instead of dataframe)
+    vector <- as.numeric(data)
+  } else { # All other datasets
+    vector <- as.numeric(data[gene,])
+  }
+  names(vector) <- gsub('P[0-9]{3}v', '', names(data))
+  return(vector)
+}
