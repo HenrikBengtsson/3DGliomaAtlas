@@ -94,7 +94,7 @@ server <- function(input, output){
   output$data_values <- renderUI({
     outputVector <- c()
     for (n in names(dataValues())){
-      localString <- paste0('Sample ',n,': ', round(dataValues()[n],2))
+      localString <- paste0('<u>Sample</u> ',n,': ', round(dataValues()[n],2))
       outputVector <- append(outputVector, localString)
     }
     HTML(paste(outputVector, collapse = '<br>'))
