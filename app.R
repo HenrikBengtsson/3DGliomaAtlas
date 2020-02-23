@@ -10,6 +10,7 @@ source("scripts/processing/processing.R", local = TRUE)
 
 # Define conventions
 datasetConversion <- c(cn.rds='Copy Number', purity.rds='Tumor Cell Proportion', rna.rds='RNAseq', bv_hyper.rds='Histology', per_nec.rds='Histology')
+unitsConversion <- c(purity.rds='Proportion of cells', cn.rds='Number of copies',rna.rds='Counts per million',bv_hyper.rds='Score (0=none, 1=mild, 2=extensive)', per_nec.rds='% of tissue with necrosis')
 
 # Load data
 sampleData <- readRDS("data/metadata/sampledata_v8.rds")
@@ -81,8 +82,22 @@ server <- function(input, output){
     getDataValues(input$patient, input$tumor, input$dataset, input$type, input$gene, input$threshold, datasetConversion)
   })
   
-  output$data_values <- renderText({
-    as.character(names(dataValues()))
+  output$units <- renderUI({
+    if (input$dataset=="Histology"){
+      fname <- names(datasetConversion[which(datasetConversion==input$type)])
+    } else {
+      fname <- names(datasetConversion[which(datasetConversion==input$dataset)])
+    }
+    HTML(paste0('<i>',as.character(unitsConversion[fname]),'</i>'))
+  })
+  
+  output$data_values <- renderUI({
+    outputVector <- c()
+    for (n in names(dataValues())){
+      localString <- paste0('Sample ',n,': ', round(dataValues()[n],2))
+      outputVector <- append(outputVector, localString)
+    }
+    HTML(paste(outputVector, collapse = '<br>'))
   })
   
   output$model3D <- renderRglwidget({ #ended with trying to get this to render in the main panel
