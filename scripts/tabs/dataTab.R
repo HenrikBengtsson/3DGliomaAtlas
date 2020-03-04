@@ -1,6 +1,6 @@
 # UI-elements for data tab
 
-tabPanel(title = "Data", id = "data",
+tabPanel(title = "Explore", id = "data",
          
   sidebarLayout(
     sidebarPanel(
