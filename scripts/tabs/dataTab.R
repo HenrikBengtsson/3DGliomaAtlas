@@ -9,7 +9,7 @@ tabPanel(title = "Explore", id = "data",
       selectInput("patient",
                   label = "Patient",
                   choices = paste0('Patient',c('260','300','303','327','340','372','373','375','413','450','452','453','454','455','457')), 
-                  selected = "Patient300"),
+                  selected = "Patient327"),
       # CN instead of "Copy Number" bc of rds naming convention (need to change later)
       
       # User input - select tumor
@@ -33,7 +33,9 @@ tabPanel(title = "Explore", id = "data",
       htmlOutput("data_values") # Placeholder
     ),
     
-    mainPanel(rglwidgetOutput("model3D"))
+    mainPanel(rglwidgetOutput("model3D"),
+              img(src = "colorbar.png", height="15%", width="15%", align="center"),
+              htmlOutput('colorbartext'))
   )
   
 )

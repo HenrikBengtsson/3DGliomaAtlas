@@ -23,7 +23,7 @@ ui <- navbarPage("3DGliomaAtlas",
   source("scripts/tabs/dataTab.R", local = TRUE)$value,
   options(shiny.sanitize.errors = TRUE),
   tags$head(tags$style(type="text/css",".shiny-output-error{visibility: hidden; }")),
-  tags$head(tags$style(".shiny-output-error:before{content: 'Loading 3D model...';visibility: visible; }")),
+  tags$head(tags$style(".shiny-output-error:before{content: 'Loading data...';visibility: visible; }")),
   theme= shinytheme('flatly')
 )
 
@@ -98,6 +98,12 @@ server <- function(input, output){
       outputVector <- append(outputVector, localString)
     }
     HTML(paste(outputVector, collapse = '<br>'))
+  })
+  
+  output$colorbartext <- renderUI({ #ended with trying to get this to render in the main panel
+    min <- as.character(round(min(dataValues()),2))
+    max <- as.character(round(max(dataValues()),2))
+    HTML(paste0('<p>', min, ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp ',max, '</p>'))
   })
   
   output$model3D <- renderRglwidget({ #ended with trying to get this to render in the main panel
