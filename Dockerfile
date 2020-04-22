@@ -11,4 +11,7 @@ RUN Rscript -e "remotes::install_github('SRHilz/GliomaAtlas3D')"
 
 EXPOSE 3838
 
+# R package 'rgl': produce OpenGL figures in headless mode
+ENV RGL_USE_NULL=true
+
 CMD ["Rscript", "-e", "shiny::runApp(system.file('shinyApp', package='GliomaAtlas3D'), port=3838, host='0.0.0.0')"]
